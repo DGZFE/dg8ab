@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>DG8AB</title>
+  <style>
+    .dg8ab-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background-color: #181818; /* Dark background */
+      color: #fff; /* White text */
+      font-family: 'Courier New', monospace;
+    }
+
+    .dg8ab-title {
+      font-size: 3rem;
+      text-transform: uppercase;
+      text-shadow: 0 0 5px rgba(0, 255, 0, 0.5); 
+    }
+
+    .dg8ab-input-container {
+      width: 80%;
+      max-width: 600px;
+      margin-bottom: 20px;
+    }
+
+    .dg8ab-input-box {
+      width: 100%;
+      padding: 15px;
+      border: none;
+      border-radius: 5px;
+      background-color: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      font-size: 1.2rem;
+      resize: vertical;
+      margin-bottom: 10px;
+    }
+
+    .dg8ab-response-container {
+      width: 80%;
+      max-width: 600px;
+      background-color: rgba(0, 255, 0, 0.05);
+      padding: 20px;
+      border-radius: 5px;
+    }
+
+    .dg8ab-response-box {
+      background-color: rgba(0, 255, 0, 0.1);
+      padding: 15px;
+      border-radius: 5px;
+    }
+
+    .dg8ab-response-text {
+      font-size: 1.1rem;
+    }
+
+    .dg8ab-footer {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #888;
+      font-size: 0.8rem;
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/javascript">
+    const { useState, useEffect } = React;
+
+    function DG8AB() {
+      const [userInput, setUserInput] = useState('');
+      const [aiResponse, setAiResponse] = useState('');
+
+      useEffect(() => {
+        const fetchResponse = async () => {
+          try {
+            const response = await fetch('/api/generate', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ input: userInput }),
+            });
+
+            const data = await response.json();
+            setAiResponse(data.response);
+          } catch (error) {
+            console.error('Error fetching AI response:', error);
+            setAiResponse('An error occurred. Please try again later.');
+          }
+        };
+
+        if (userInput) {
+          fetchResponse();
+        }
+      }, [userInput]);
+
+      const handleChange = (event) => {
+        setUserInput(event.target.value);
+      };
+
+      return (
+        <div className="dg8ab-container">
+          <h1 className="dg8ab-title">DG8AB</h1> 
+          <div className="dg8ab-input-container">
+            <textarea 
+              className="dg8ab-input-box" 
+              placeholder="Query the Oracle..." 
+              value={userInput} 
+              onChange={handleChange} 
+            />
+          </div>
+          <div className="dg8ab-response-container">
+            <div className="dg8ab-response-box">
+              <p className="dg8ab-response-text">{aiResponse}</p>
+            </div>
+          </div>
+          <div className="dg8ab-footer">
+            <p>© 2024 DG8AB Corporation. All rights reserved.</p>
+          </div>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<DG8AB />);
+  </script>
+</body>
+</html>
