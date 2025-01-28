@@ -65,43 +65,27 @@
       font-size: 0.8rem;
     }
   </style>
-</head>
-<body>
-  <div id="root"></div>
 
-  <script type="text/javascript">
-    const { useState, useEffect } = React;
+  <script src="https://js.puter.com/v2/"></script> 
+  <script>
+    const root = ReactDOM.createRoot(document.getElementById('root'));
 
     function DG8AB() {
-      const [userInput, setUserInput] = useState('');
-      const [aiResponse, setAiResponse] = useState('');
-
-      useEffect(() => {
-        const fetchResponse = async () => {
-          try {
-            const response = await fetch('/api/generate', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({ input: userInput }),
-            });
-
-            const data = await response.json();
-            setAiResponse(data.response);
-          } catch (error) {
-            console.error('Error fetching AI response:', error);
-            setAiResponse('An error occurred. Please try again later.');
-          }
-        };
-
-        if (userInput) {
-          fetchResponse();
-        }
-      }, [userInput]);
+      const [userInput, setUserInput] = React.useState('');
+      const [aiResponse, setAiResponse] = React.useState('');
 
       const handleChange = (event) => {
         setUserInput(event.target.value);
+      };
+
+      const handleSubmit = async () => {
+        try {
+          const response = await puter.ai.chat(userInput); // Use Puter.js for AI interaction
+          setAiResponse(response.text); 
+        } catch (error) {
+          console.error('Error:', error);
+          setAiResponse('An error occurred. Please try again later.');
+        }
       };
 
       return (
@@ -114,6 +98,7 @@
               value={userInput} 
               onChange={handleChange} 
             />
+            <button onClick={handleSubmit}>Submit</button> 
           </div>
           <div className="dg8ab-response-container">
             <div className="dg8ab-response-box">
@@ -127,7 +112,6 @@
       );
     }
 
-    const root = ReactDOM.createRoot(document.getElementById('root'));
     root.render(<DG8AB />);
   </script>
 </body>
